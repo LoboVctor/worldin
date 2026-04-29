@@ -1,0 +1,20 @@
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .filters-bar {
+    flex-direction: column;
+  }
+}
+
+.leaflet-popup-content-wrapper {
+  background-color: var(--bg-card);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.leaflet-popup-tip {
+  background-color: var(--bg-card);
+}

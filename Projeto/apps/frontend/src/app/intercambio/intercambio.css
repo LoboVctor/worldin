@@ -1,0 +1,26 @@
+.star-interactive:hover {
+  transform: scale(1.2);
+}
+
+.star-rating-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toast.show {
+  display: block;
+  opacity: 1;
+  animation: slideInToast 0.3s ease;
+}
+
+@keyframes slideInToast {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

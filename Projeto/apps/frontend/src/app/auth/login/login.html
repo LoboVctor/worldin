@@ -1,0 +1,57 @@
+<div class="login-container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="glass-card p-5" style="width: 100%; max-width: 450px;">
+    <div class="text-center mb-4">
+      <h2 style="color: var(--primary); font-weight: 700;">Worldin</h2>
+      <p class="text-secondary">Faça login para acessar o sistema</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="email" class="form-label text-light">E-mail</label>
+        <input 
+          type="email" 
+          id="email" 
+          class="form-control form-control-custom" 
+          formControlName="email" 
+          placeholder="exemplo@email.com"
+          maxlength="50"
+        >
+        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-danger small mt-1">
+          E-mail inválido ou campo obrigatório (máx 50 caracteres).
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="senha" class="form-label text-light">Senha</label>
+        <input 
+          type="password" 
+          id="senha" 
+          class="form-control form-control-custom" 
+          formControlName="senha" 
+          placeholder="Sua senha"
+          maxlength="50"
+        >
+        <div *ngIf="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched" class="text-danger small mt-1">
+          Campo obrigatório (máx 50 caracteres).
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger p-2 mb-3 small">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary-custom w-100 mb-3"
+        [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        {{ isLoading ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      <div class="text-center mt-3">
+        <span class="text-secondary">Ainda não tem uma conta? </span>
+        <a routerLink="/register" style="color: var(--primary); text-decoration: none; font-weight: 500;">Cadastrar-se</a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,108 @@
+<div class="register-container d-flex justify-content-center align-items-center min-vh-100 py-5">
+  <div class="glass-card p-5" style="width: 100%; max-width: 500px;">
+    <div class="text-center mb-4">
+      <h2 style="color: var(--primary); font-weight: 700;">Worldin</h2>
+      <p class="text-secondary">Crie sua conta</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="nome" class="form-label text-light">Nome Completo</label>
+        <input type="text" id="nome" class="form-control form-control-custom" formControlName="nome" placeholder="Seu nome">
+        <div *ngIf="registerForm.get('nome')?.invalid && registerForm.get('nome')?.touched" class="text-danger small mt-1">Campo obrigatório.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="cpf" class="form-label text-light">CPF (Apenas números)</label>
+        <input type="text" id="cpf" class="form-control form-control-custom" formControlName="cpf" placeholder="00000000000" maxlength="11">
+        <div *ngIf="registerForm.get('cpf')?.invalid && registerForm.get('cpf')?.touched" class="text-danger small mt-1">CPF inválido (deve conter 11 dígitos).</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label text-light">E-mail</label>
+        <input type="email" id="email" class="form-control form-control-custom" formControlName="email" placeholder="exemplo@email.com" maxlength="50">
+        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger small mt-1">E-mail inválido ou excede 50 caracteres.</div>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="mb-3">
+        <label class="form-label text-light">Tipo de Conta</label>
+        <div class="d-flex gap-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="role" id="roleEstudante" value="ESTUDANTE" formControlName="role">
+            <label class="form-check-label text-light" for="roleEstudante">
+              <i class="bi bi-mortarboard me-1"></i> Estudante
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="role" id="roleGerente" value="GERENTE" formControlName="role">
+            <label class="form-check-label text-light" for="roleGerente">
+              <i class="bi bi-briefcase me-1"></i> Gerente
+            </label>
+          </div>
+        </div>
+        <div *ngIf="registerForm.get('role')?.invalid && registerForm.get('role')?.touched" class="text-danger small mt-1">Selecione o tipo de conta.</div>
+      </div>
+
+      <!-- Password with Popover -->
+      <div class="mb-3 position-relative">
+        <label for="senha" class="form-label text-light">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          class="form-control form-control-custom"
+          formControlName="senha"
+          placeholder="Sua senha"
+          maxlength="50"
+          (focus)="showPasswordCriteria = true"
+          (blur)="showPasswordCriteria = false"
+        >
+        <!-- Password Criteria Popover -->
+        <div *ngIf="showPasswordCriteria" class="password-criteria-popover glass-card p-3 mt-2">
+          <p class="mb-2 small" style="color: var(--primary); font-weight: 600;">Critérios da senha:</p>
+          <ul class="list-unstyled mb-0 small">
+            <li [ngClass]="{'text-success': hasMinLength, 'text-danger': !hasMinLength}">
+              <i class="bi" [ngClass]="{'bi-check-circle-fill': hasMinLength, 'bi-x-circle-fill': !hasMinLength}"></i>
+              Mínimo de 8 caracteres
+            </li>
+            <li [ngClass]="{'text-success': hasMaxLength, 'text-danger': !hasMaxLength}">
+              <i class="bi" [ngClass]="{'bi-check-circle-fill': hasMaxLength, 'bi-x-circle-fill': !hasMaxLength}"></i>
+              Máximo de 50 caracteres
+            </li>
+            <li [ngClass]="{'text-success': hasUpperCase, 'text-danger': !hasUpperCase}">
+              <i class="bi" [ngClass]="{'bi-check-circle-fill': hasUpperCase, 'bi-x-circle-fill': !hasUpperCase}"></i>
+              Pelo menos uma letra maiúscula
+            </li>
+            <li [ngClass]="{'text-success': hasLowerCase, 'text-danger': !hasLowerCase}">
+              <i class="bi" [ngClass]="{'bi-check-circle-fill': hasLowerCase, 'bi-x-circle-fill': !hasLowerCase}"></i>
+              Pelo menos uma letra minúscula
+            </li>
+            <li [ngClass]="{'text-success': hasSpecialChar, 'text-danger': !hasSpecialChar}">
+              <i class="bi" [ngClass]="{'bi-check-circle-fill': hasSpecialChar, 'bi-x-circle-fill': !hasSpecialChar}"></i>
+              Pelo menos um caractere especial
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="confirmarSenha" class="form-label text-light">Confirmar Senha</label>
+        <input type="password" id="confirmarSenha" class="form-control form-control-custom" formControlName="confirmarSenha" placeholder="Confirme sua senha">
+        <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmarSenha')?.touched" class="text-danger small mt-1">As senhas não coincidem.</div>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger p-2 mb-3 small">{{ errorMessage }}</div>
+      <div *ngIf="successMessage" class="alert alert-success p-2 mb-3 small">{{ successMessage }}</div>
+
+      <button type="submit" class="btn btn-primary-custom w-100 mb-3" [disabled]="registerForm.invalid || isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+      </button>
+
+      <div class="text-center mt-3">
+        <span class="text-secondary">Já possui conta? </span>
+        <a routerLink="/login" style="color: var(--primary); text-decoration: none; font-weight: 500;">Fazer login</a>
+      </div>
+    </form>
+  </div>
+</div>

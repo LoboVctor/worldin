@@ -1,0 +1,211 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--bg-dark); border-bottom: 1px solid rgba(255,255,255,0.1);">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/home" style="color: var(--primary); font-weight: 700;">Worldin</a>
+    <div class="d-flex align-items-center">
+      <a routerLink="/home" class="btn btn-outline-light me-3 btn-sm">Voltar</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5 mb-5">
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border" style="color: var(--primary);" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <!-- MODO CRIAÇÃO/EDIÇÃO DE INTERCÂMBIO -->
+  <div *ngIf="isNew && !isLoading" class="glass-card p-5 mx-auto" style="max-width: 800px;">
+    <h3 class="mb-4" style="color: var(--primary); font-weight: 600;">
+      {{ isEditing ? 'Editar Intercâmbio' : 'Adicionar Novo Intercâmbio' }}
+    </h3>
+
+    <form [formGroup]="intercambioForm" (ngSubmit)="onSubmitIntercambio()">
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label class="form-label text-light">Título do Pacote</label>
+          <input type="text" class="form-control form-control-custom" formControlName="titulo">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">País</label>
+          <input type="text" class="form-control form-control-custom" formControlName="pais">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">Cidade</label>
+          <input type="text" class="form-control form-control-custom" formControlName="cidade">
+        </div>
+        <div class="col-md-8 mb-3">
+          <label class="form-label text-light">Instituição de Ensino</label>
+          <input type="text" class="form-control form-control-custom" formControlName="instituicao">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label text-light">Preço (R$)</label>
+          <input type="number" class="form-control form-control-custom" formControlName="preco">
+        </div>
+        <div class="col-md-12 mb-3">
+          <label class="form-label text-light">Link de Compra</label>
+          <input type="url" class="form-control form-control-custom" formControlName="link_compra" placeholder="https://...">
+          <small class="form-text text-secondary">Link para a página de compra do intercâmbio</small>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">Latitude</label>
+          <input type="number" step="0.000001" class="form-control form-control-custom" formControlName="latitude" placeholder="Ex: -23.550520">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">Longitude</label>
+          <input type="number" step="0.000001" class="form-control form-control-custom" formControlName="longitude" placeholder="Ex: -46.633308">
+        </div>
+        <div class="col-md-12 mb-4">
+          <label class="form-label text-light">Descrição Detalhada</label>
+          <textarea class="form-control form-control-custom" rows="4" formControlName="descricao"></textarea>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-3">
+        <button type="button" class="btn btn-outline-light" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="btn btn-primary-custom" [disabled]="intercambioForm.invalid || isLoading">
+          {{ isEditing ? 'Salvar Alterações' : 'Adicionar Intercâmbio' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- MODO VISUALIZAÇÃO DE DETALHES -->
+  <div *ngIf="!isNew && !isLoading && intercambioDetail" class="row g-4">
+    <div class="col-lg-8">
+      <div class="glass-card overflow-hidden mb-4">
+        <div style="height: 400px; background: linear-gradient(135deg, #3c3c3c, #1a1a1a);" class="d-flex align-items-center justify-content-center">
+          <i class="bi bi-globe-americas" style="font-size: 5rem; color: var(--primary); opacity: 0.4;"></i>
+        </div>
+        <div class="p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+            <h2 style="color: var(--primary); font-weight: 700;">{{ intercambioDetail.titulo }}</h2>
+            <span class="badge bg-primary fs-5" style="background-color: var(--primary) !important; color: black !important;">R$ {{ intercambioDetail.preco | number:'1.2-2' }}</span>
+          </div>
+          <h5 class="text-secondary mb-3"><i class="bi bi-geo-alt-fill"></i> {{ intercambioDetail.cidade }}, {{ intercambioDetail.pais }}</h5>
+
+          <!-- Average Rating -->
+          <div class="mb-3">
+            <span *ngFor="let star of getStars(mediaNotas)" class="star-display">
+              <i class="bi" [ngClass]="{
+                'bi-star-fill text-warning': star === 1,
+                'bi-star-half text-warning': star === 0.5,
+                'bi-star text-secondary': star === 0
+              }" style="font-size: 1.2rem;"></i>
+            </span>
+            <span class="text-secondary ms-2">{{ mediaNotas }} ({{ avaliacoes.length }} avaliações)</span>
+          </div>
+
+          <h5 class="text-light mb-3">Sobre o programa</h5>
+          <p class="text-light" style="line-height: 1.6;">{{ intercambioDetail.descricao || 'Sem descrição disponível.' }}</p>
+
+          <hr class="border-secondary my-4">
+
+          <h5 class="text-light mb-3"><i class="bi bi-building"></i> Instituição</h5>
+          <p class="text-light">{{ intercambioDetail.instituicao || 'Não informada' }}</p>
+
+          <!-- Botão Compra -->
+          <div *ngIf="intercambioDetail.link_compra" class="mt-4">
+            <button class="btn btn-primary-custom" (click)="goToCompra()">
+              <i class="bi bi-cart-check me-2"></i>Ir para a página de compra
+            </button>
+          </div>
+
+          <!-- Botões do Gerente -->
+          <div *ngIf="isGerente" class="mt-4 d-flex gap-3">
+            <button class="btn btn-outline-custom" (click)="editIntercambio()">
+              <i class="bi bi-pencil me-1"></i>Editar
+            </button>
+            <button class="btn btn-outline-danger" (click)="deleteIntercambio()">
+              <i class="bi bi-trash me-1"></i>Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULÁRIO DE AVALIAÇÃO -->
+      <div class="glass-card p-4">
+        <h4 class="mb-3" style="color: var(--primary);">Deixe sua avaliação</h4>
+        <form [formGroup]="avaliacaoForm" (ngSubmit)="onSubmitAvaliacao()">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label class="form-label text-light">Sua Nota</label>
+              <div class="star-rating-input">
+                <i *ngFor="let i of [1,2,3,4,5]"
+                  class="bi star-interactive"
+                  [ngClass]="{
+                    'bi-star-fill': (hoverRating || selectedRating) >= i,
+                    'bi-star': (hoverRating || selectedRating) < i
+                  }"
+                  (click)="setRating(i)"
+                  (mouseenter)="setHoverRating(i)"
+                  (mouseleave)="clearHoverRating()"
+                  style="font-size: 1.8rem; cursor: pointer; color: #ffc107; transition: transform 0.1s ease;"
+                ></i>
+                <span class="text-secondary ms-2 align-middle">{{ selectedRating }}/5</span>
+              </div>
+            </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label text-light">Resumo da Avaliação</label>
+              <input type="text" class="form-control form-control-custom" formControlName="titulo" placeholder="Ex: Incrível, recomendo!">
+            </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label text-light">Relato Detalhado</label>
+              <textarea class="form-control form-control-custom" rows="3" formControlName="descricao" placeholder="Conte como foi sua experiência..."></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary-custom" [disabled]="avaliacaoForm.invalid">Publicar Relato</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- LISTA DE AVALIAÇÕES -->
+    <div class="col-lg-4">
+      <h4 class="mb-4" style="color: white;">Avaliações de Alunos</h4>
+      <div class="d-flex flex-column gap-3">
+        <div class="glass-card p-3" *ngFor="let avaliacao of avaliacoes">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width: 30px; height: 30px;">
+                <i class="bi bi-person-fill text-light"></i>
+              </div>
+              <span style="font-weight: 600; color: white;">{{ avaliacao.usuario?.nome || 'Anônimo' }}</span>
+            </div>
+            <div>
+              <i *ngFor="let s of getStars(avaliacao.nota)"
+                class="bi"
+                [ngClass]="{
+                  'bi-star-fill text-warning': s === 1,
+                  'bi-star text-secondary': s === 0
+                }"
+                style="font-size: 0.8rem;"
+              ></i>
+            </div>
+          </div>
+          <h6 class="mt-2 text-light">{{ avaliacao.titulo }}</h6>
+          <p class="text-secondary small mb-2">{{ avaliacao.descricao }}</p>
+          <div class="text-end text-muted" style="font-size: 0.75rem;">{{ avaliacao.data_criacao | date:'dd/MM/yyyy' }}</div>
+        </div>
+
+        <div *ngIf="avaliacoes.length === 0" class="text-secondary text-center p-3">
+          Nenhuma avaliação ainda. Seja o primeiro a relatar!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+  <div class="toast" [class.show]="showToast" role="alert" aria-live="assertive" aria-atomic="true"
+    style="background-color: var(--bg-card); border: 1px solid var(--primary);">
+    <div class="toast-header" style="background-color: var(--primary); color: black;">
+      <strong class="me-auto">Worldin</strong>
+      <button type="button" class="btn-close btn-close-white" (click)="showToast = false"></button>
+    </div>
+    <div class="toast-body text-light">
+      {{ toastMessage }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,202 @@
+FUNDAÇÃO GETÚLIO VARGAS 
+Relatório do projeto - Sistema de Avaliação de Intercâmbio (Worldin) 
+João Victor Prata, Thamires dos Anjos, Victor Lobo 
+Este documento tem como objetivo descrever sobre o desenvolvimento e 
+funcionamento de um site de consulta de destinos de intercâmbio. Providencia 
+um ambiente de compartilhamento de experiências, visando sanar dúvidas sobre 
+possíveis pacotes de intercâmbio, além de avaliar esses pacotes. 
+Distribuição dos papéis: 
+Tech Lead: Victor L. 
+Distribuição dos papéis para o desenvolvimento: Victor L. 
+Backlog do Produto: Thamires dos Anjos 
+Histórias do Usuário: Thamires dos Anjos 
+Estrutura do Banco de Dados: João Victor Prata 
+Design de Telas: João Victor Prata 
+Front-end, Back-end: AntiGravity 
+Prompts: João Victor Prata, Thamires dos Anjos, Victor L. 
+ 
+ 
+Backlog do produto: 
+O sistema tem como objetivo auxiliar usuários a descobrir, comparar e avaliar 
+opções de intercâmbio, fornecendo informações relevantes como custo de vida, 
+clima, idioma e experiências reais de outros usuários. 
+Usuário: Busca informações sobre intercâmbio, realiza comparações entre países, 
+simula custos e compartilhar experiências.  
+ 
+ 
+ 
+ 
+Histórias de usuário: 
+ÉPICO 1 - LOGIN / CADASTRO DE USUÁRIO: 
+●​ Assim que o usuário acessar o sistema ele verá um formulário para 
+adicionar as informações para fazer o login como (e-mail e senha). 
+●​ No formulário de login terá um link “Cadastrar-se” para que o usuário faça o 
+cadastro. 
+●​ No cadastro o usuário irá informar dados como ( nome, CPF, e-mail e senha 
+). 
+●​ O sistema deve impedir o usuário de digitar mais de 50 caracteres nos 
+campos obrigatórios (e-mail e senha). 
+●​ No formulário abaixo da confirmação de senha terá um link onde apresenta 
+os critérios da senha.  
+●​ O botão “Cadastrar” deve ficar desabilitado até que todos os campos sejam 
+preenchidos.  
+●​ Após o usuário preencher todos os dados do cadastro e clicar em 
+“cadastrar” o sistema vai exibir a mensagem de sucesso. 
+●​ Após cadastrar o usuário irá clicar no link “Fazer login” para entrar no 
+sistema 
+COMO usuário  
+QUERO cadastrar meu dados e realizar o login 
+PARA acessar o sistema 
+ 
+ÉPICO 2 - ACESSO A PÁGINA INICIAL  
+ 
+ 
+●​ Quando o usuário acessar a página inicial, ele poderá visualizar card de 
+intercâmbios, uma barra de filtro para filtrar o que o usuário procura, e uma 
+barra de medir qual valor o usuário desejar, botão de adicionar intercâmbio, 
+botão de visualizar conta para edição de dados e botão de sair do sistema. 
+●​ Quando o usuário clicar em um card ele vai poder visualizar com mais 
+detalhe as informações do lugar do país, melhores agências, clima do lugar, 
+comidas típicas, entre outras informações. 
+●​ O usuário vai poder avaliar também os intercâmbios. 
+COMO usuário 
+QUERO visualizar as opções de intercâmbio e avaliar 
+PARA que possa fazer boas escolhas e orientar outros usuário 
+ 
+ÉPICO 3 - ADICIONAR O INTERCÂMBIO 
+ 
+●​ Quando o usuário clicar no botão “Novo Intercâmbio” ele será direcionado 
+para um formulário. 
+●​ No formulário ele vai preencher com informações como (Título, País, 
+Cidade, Instituição, Preço e Descrição). 
+●​ Após preencher com essas informações ele vai ter dois botão “cancelar” 
+caso não queira publicar as informações sobre o intercâmbio.  
+●​ E temos também o botão “Adicionar Intercâmbio” para a publicação do 
+intercâmbio. 
+COMO usuário 
+QUERO adicionar intercâmbios  
+PARA possibilitar uma boa experiências de intercâmbio para outras pessoas 
+ 
+ 
+ÉPICO 4 - ADIÇÃO DE RELATOS: 
+ 
+●​ O cliente poderá visualizar relatos dentro do card do intercâmbio 
+selecionado de estudantes que já realizaram intercâmbio no local. 
+●​ O usuário poderá também adicionar relatos sobre experiências já vividas no 
+local e os pontos positivos e negativos do intercâmbio. 
+●​ Após adicionar o relato o sistema vai exibir uma mensagem de sucesso. 
+COMO usuário 
+QUERO visualizar e adicionar relatos 
+PARA ter feedback de intercambista e dá um ponto de vista de quem já fez o 
+intercâmbio  
+ 
+ÉPICO  5 - EDIÇÃO DE DADOS DO USUÁRIO: 
+ 
+●​ Quando o usuário clicar no botão de visualizar a conta ele poderá ver seus 
+dados e caso queira editar o próprio dado. 
+●​ Após o usuário editar o seus dados o sistema exibirá a mensagem de 
+sucesso. 
+COMO usuário 
+QUERO editar meus dados cadastrados 
+PARA corrigir possíveis erros ou atualizar os dados   
+ 
+ÉPICO 5 - SAIR DO SISTEMA : 
+ 
+●​ O usuário poderá sair do sistema clicando no botão ao lado do botão de 
+edição sendo automaticamente deslogado do sistema. 
+●​ Quando o usuário clicar no botão o sistema irá exibir a pergunta de 
+confirmação. 
+ 
+ 
+COMO usuário 
+QUERO sair do sistema  
+PARA decolar do sistema  
+ 
+ 
+ 
+Estrutura do Banco de Dados: 
+Tabela usuarios: 
+Propósito: armazenar as informações de todos que acessam o sistema. 
+Campos Importantes: 
+●​ cpf: identificador único para cada usuário. 
+ 
+Tabela intercambios: 
+Propósito: armazenar todos os pacotes de intercâmbios. 
+Campos Importantes: 
+●​ id_intercambio: identificador único para cada intercâmbio. 
+ 
+Tabela avaliacoes: 
+Propósito: armazenar avaliações feitas pelos usuários, de todos os intercâmbios. 
+Campos Importantes: 
+●​ id_avaliacao: identificador único para cada avaliação. 
+●​ cpf:  link para a tabela usuarios, indicando quem é o usuário responsável 
+por aquela avaliação. 
+●​ id_intercambio: link para a tabela intercambios, indicando qual intercâmbio 
+a avaliação se trata. 
+ 
+Como as Tabelas se Conectam: 
+ 
+●​ Um usuário pode criar vários intercâmbios. 
+●​ Um intercâmbio é criado por um único usuário. 
+●​ Um usuário pode fazer várias avaliações. 
+●​ Cada avaliação pertence a um único usuário. 
+●​ Um intercâmbio pode ter várias avaliações. 
+●​ Cada avaliação pertence a um único intercâmbio. 
+ 
+ 
+Banco de Dados: 
+Para representação da estrutura do banco de dados, foi escolhido o modelo 
+textual estruturado. Considerando que esse projeto será feito com auxílio de IA, 
+o modelo textual é ideal. Esse modelo garante que a IA interprete corretamente 
+todas as entidades, atributos e relacionamentos, visto que IAs costumam ter 
+dificuldade em interpretar imagens de diagramas de bancos de dados 
+(compreender as setas, qual entidade se conecta com qual e como, entre outras 
+interpretações importantes). 
+ 
+ENTIDADE Usuario​
+- cpf (PK, CHAR(11))​
+- nome (VARCHAR(100), NOT NULL)​
+- email (VARCHAR(254), NOT NULL, UNIQUE)​
+- senha_hash (VARCHAR(255), NOT NULL)​
+​
+ENTIDADE Intercambio​
+- id_intercambio (PK, INT)​
+- titulo (VARCHAR(150), NOT NULL)​
+- pais (VARCHAR(80), NOT NULL)​
+- cidade (VARCHAR(80), NOT NULL)​
+ 
+- instituicao (VARCHAR(150))​
+- preco (DECIMAL(10,2), CHECK preco >= 0)​
+- id_usuario (FK -> Usuario.cpf, NOT NULL)​
+​
+ENTIDADE Avaliacao​
+- id_avaliacao (PK, INT)​
+- titulo (VARCHAR(150), NOT NULL)​
+- descricao (TEXT, NOT NULL) 
+- data_criacao (DATE, NOT NULL)​
+- nota (INT, NOT NULL, CHECK 0 <= nota <= 5)​
+- id_usuario (FK -> Usuario.cpf, NOT NULL)​
+- id_intercambio (FK -> Intercambio.id_intercambio, NOT 
+NULL)​
+​
+RELACIONAMENTOS​
+Usuario (1) --- (N) Intercambio : cria​
+Usuario (1) --- (N) Avaliacao : faz​
+Intercambio (1) --- (N) Avaliacao : recebe 
+ 
+ 
+ 
+Linguagem de programação utilizada: 
+Para desenvolvimento do projeto, foi optado pela linguagem Typescript no 
+Front-end e no Back-end. O SGBD utilizado para gerenciar os dados foi o 
+Postgres, usando o TypeORM para a manipulação dos dados. Para a visualização 
+do banco, será utilizado o pgAdmin. 
+ 
+Programa verificador para o padrão de codificação: será utilizado o ESLint como 
+verificador (https://eslint.org/docs/latest/). 
+Bibliotecas e frameworks: Angular e Bootstrap para desenvolvimento Frontend. 
+NestJS e TypeORM para desenvolvimento Back End . 
+Histórico de desenvolvimento: O histórico de desenvolvimento está sendo  
+registrado em um arquivo Docs e posteriormente será adicionado no projeto final. 
+O versionamento do projeto será feito pelo Github. 
+ 

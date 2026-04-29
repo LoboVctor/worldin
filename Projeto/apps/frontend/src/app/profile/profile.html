@@ -1,0 +1,160 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--bg-dark); border-bottom: 1px solid rgba(255,255,255,0.1);">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/home" style="color: var(--primary); font-weight: 700;">Worldin</a>
+    <div class="d-flex align-items-center">
+      <a routerLink="/home" class="btn btn-outline-light me-3 btn-sm">Voltar</a>
+      <button class="btn btn-danger btn-sm" (click)="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5 mb-5">
+  <div class="glass-card p-5 mx-auto" style="max-width: 600px;">
+    <div class="text-center mb-4">
+      <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center mx-auto mb-3" style="width: 100px; height: 100px;">
+        <i class="bi bi-person-fill text-light" style="font-size: 4rem;"></i>
+      </div>
+      <h3 style="color: var(--primary); font-weight: 600;">{{ userName }}</h3>
+      <span class="badge" style="background-color: var(--primary); color: black; font-size: 0.8rem;">
+        {{ userRole === 'GERENTE' ? 'Gerente' : 'Estudante' }}
+      </span>
+    </div>
+
+    <!-- Profile Form -->
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="nome" class="form-label text-light">Nome Completo</label>
+        <input type="text" id="nome" class="form-control form-control-custom" formControlName="nome">
+        <div *ngIf="profileForm.get('nome')?.invalid && profileForm.get('nome')?.touched" class="text-danger small mt-1">Campo obrigatório.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label text-light">E-mail</label>
+        <input type="email" id="email" class="form-control form-control-custom" formControlName="email">
+        <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-danger small mt-1">E-mail inválido.</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="cpf" class="form-label text-secondary">CPF</label>
+        <input type="text" id="cpf" class="form-control form-control-custom text-secondary" formControlName="cpf">
+        <small class="form-text text-secondary">O CPF não pode ser alterado.</small>
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success p-2 mb-3 small text-center">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="alert alert-danger p-2 mb-3 small text-center">{{ errorMessage }}</div>
+
+      <button type="submit" class="btn btn-primary-custom w-100" [disabled]="profileForm.invalid">Salvar Alterações</button>
+    </form>
+
+    <hr class="border-secondary my-4">
+
+    <!-- Change Password Section -->
+    <div class="mb-3">
+      <button class="btn btn-outline-custom w-100" (click)="togglePasswordSection()">
+        <i class="bi bi-key me-2"></i>
+        {{ showPasswordSection ? 'Cancelar Alteração de Senha' : 'Alterar Senha' }}
+      </button>
+    </div>
+
+    <div *ngIf="showPasswordSection" class="glass-card p-4 mb-3" style="animation: fadeIn 0.3s ease;">
+      <h5 class="mb-3" style="color: var(--primary);">Alterar Senha</h5>
+      <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+        <div class="mb-3">
+          <label class="form-label text-light">Senha Atual</label>
+          <input type="password" class="form-control form-control-custom" formControlName="senhaAtual" placeholder="Sua senha atual">
+        </div>
+        <div class="mb-3 position-relative">
+          <label class="form-label text-light">Nova Senha</label>
+          <input
+            type="password"
+            class="form-control form-control-custom"
+            formControlName="novaSenha"
+            placeholder="Nova senha"
+            maxlength="50"
+            (focus)="showPasswordCriteria = true"
+            (blur)="showPasswordCriteria = false"
+          >
+          <!-- Password Criteria Popover -->
+          <div *ngIf="showPasswordCriteria" class="password-criteria-popover glass-card p-3 mt-2">
+            <p class="mb-2 small" style="color: var(--primary); font-weight: 600;">Critérios da senha:</p>
+            <ul class="list-unstyled mb-0 small">
+              <li [ngClass]="{'text-success': hasMinLength, 'text-danger': !hasMinLength}">
+                <i class="bi" [ngClass]="{'bi-check-circle-fill': hasMinLength, 'bi-x-circle-fill': !hasMinLength}"></i>
+                Mínimo de 8 caracteres
+              </li>
+              <li [ngClass]="{'text-success': hasMaxLength, 'text-danger': !hasMaxLength}">
+                <i class="bi" [ngClass]="{'bi-check-circle-fill': hasMaxLength, 'bi-x-circle-fill': !hasMaxLength}"></i>
+                Máximo de 50 caracteres
+              </li>
+              <li [ngClass]="{'text-success': hasUpperCase, 'text-danger': !hasUpperCase}">
+                <i class="bi" [ngClass]="{'bi-check-circle-fill': hasUpperCase, 'bi-x-circle-fill': !hasUpperCase}"></i>
+                Pelo menos uma letra maiúscula
+              </li>
+              <li [ngClass]="{'text-success': hasLowerCase, 'text-danger': !hasLowerCase}">
+                <i class="bi" [ngClass]="{'bi-check-circle-fill': hasLowerCase, 'bi-x-circle-fill': !hasLowerCase}"></i>
+                Pelo menos uma letra minúscula
+              </li>
+              <li [ngClass]="{'text-success': hasSpecialChar, 'text-danger': !hasSpecialChar}">
+                <i class="bi" [ngClass]="{'bi-check-circle-fill': hasSpecialChar, 'bi-x-circle-fill': !hasSpecialChar}"></i>
+                Pelo menos um caractere especial
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-light">Confirmar Nova Senha</label>
+          <input type="password" class="form-control form-control-custom" formControlName="confirmarNovaSenha" placeholder="Confirme a nova senha">
+          <div *ngIf="passwordForm.hasError('mismatch') && passwordForm.get('confirmarNovaSenha')?.touched" class="text-danger small mt-1">As senhas não coincidem.</div>
+        </div>
+
+        <div *ngIf="passwordSuccess" class="alert alert-success p-2 mb-3 small">{{ passwordSuccess }}</div>
+        <div *ngIf="passwordError" class="alert alert-danger p-2 mb-3 small">{{ passwordError }}</div>
+
+        <button type="submit" class="btn btn-primary-custom w-100" [disabled]="passwordForm.invalid">Alterar Senha</button>
+      </form>
+    </div>
+
+    <!-- Delete Account Button -->
+    <button class="btn btn-outline-danger w-100" (click)="openDeleteModal()">
+      <i class="bi bi-trash me-2"></i>Excluir Conta
+    </button>
+  </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeDeleteModal()">
+  <div class="modal-content glass-card p-4" (click)="$event.stopPropagation()" style="max-width: 450px; width: 90%;">
+    <h4 class="mb-3" style="color: #ff6b6b; font-weight: 600;">
+      <i class="bi bi-exclamation-triangle me-2"></i>Excluir Conta
+    </h4>
+    <p class="text-light mb-3">
+      Esta ação é <strong>irreversível</strong>. Todos os seus dados serão permanentemente removidos.
+    </p>
+    <p class="text-secondary mb-3">
+      Para confirmar, digite sua senha abaixo:
+    </p>
+
+    <div class="mb-3">
+      <input
+        type="password"
+        class="form-control form-control-custom"
+        [(ngModel)]="deletePassword"
+        placeholder="Sua senha"
+      >
+    </div>
+
+    <div *ngIf="deleteError" class="alert alert-danger p-2 mb-3 small">{{ deleteError }}</div>
+
+    <div class="d-flex gap-3 justify-content-end">
+      <button class="btn btn-outline-light" (click)="closeDeleteModal()">Cancelar</button>
+      <button
+        class="btn btn-danger"
+        (click)="confirmDeleteAccount()"
+        [disabled]="!deletePassword || isDeleting"
+      >
+        <span *ngIf="isDeleting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        {{ isDeleting ? 'Excluindo...' : 'Excluir Conta' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../auth.service';
+
+@Component({
+  selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './register.html',
+  styleUrl: './register.css',
+})
+export class Register {
+  registerForm: FormGroup;
+  errorMessage: string = '';
+  successMessage: string = '';
+  isLoading: boolean = false;
+  showPasswordCriteria: boolean = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.registerForm = this.fb.group({
+      nome: ['', [Validators.required, Validators.maxLength(100)]],
+      cpf: ['', [Validators.required, Validators.pattern('^[0-9]{11}$')]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+      role: ['', [Validators.required]],
+      senha: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordStrengthValidator]],
+      confirmarSenha: ['', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasLowerCase = /[a-z]/.test(value);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(value);
+
+    const errors: any = {};
+    if (!hasUpperCase) errors.noUpperCase = true;
+    if (!hasLowerCase) errors.noLowerCase = true;
+    if (!hasSpecialChar) errors.noSpecialChar = true;
+
+    return Object.keys(errors).length ? errors : null;
+  }
+
+  passwordMatchValidator(g: FormGroup) {
+    return g.get('senha')?.value === g.get('confirmarSenha')?.value
+      ? null : { mismatch: true };
+  }
+
+  get senhaControl() {
+    return this.registerForm.get('senha');
+  }
+
+  get hasMinLength(): boolean {
+    return (this.senhaControl?.value?.length || 0) >= 8;
+  }
+
+  get hasMaxLength(): boolean {
+    return (this.senhaControl?.value?.length || 0) <= 50;
+  }
+
+  get hasUpperCase(): boolean {
+    return /[A-Z]/.test(this.senhaControl?.value || '');
+  }
+
+  get hasLowerCase(): boolean {
+    return /[a-z]/.test(this.senhaControl?.value || '');
+  }
+
+  get hasSpecialChar(): boolean {
+    return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(this.senhaControl?.value || '');
+  }
+
+  onSubmit() {
+    if (this.registerForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      this.successMessage = '';
+
+      const { nome, cpf, email, senha, role } = this.registerForm.value;
+
+      this.authService.register({ nome, cpf, email, senha, role }).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.successMessage = 'Cadastro realizado com sucesso! Redirecionando para o login...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || 'Erro ao criar conta. Tente novamente.';
+        }
+      });
+    } else {
+      this.registerForm.markAllAsTouched();
+    }
+  }
+}
