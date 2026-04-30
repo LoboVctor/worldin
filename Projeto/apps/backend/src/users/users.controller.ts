@@ -6,7 +6,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Patch(':cpf/profile')
-  async updateProfile(@Param('cpf') cpf: string, @Body() body: { nome?: string; email?: string }) {
+  async updateProfile(@Param('cpf') cpf: string, @Body() body: { nome?: string; email?: string; foto_perfil?: string }) {
     const user = await this.usersService.updateProfile(cpf, body);
     const { senha_hash, ...result } = user;
     return result;

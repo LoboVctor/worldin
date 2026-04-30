@@ -14,16 +14,17 @@ import * as L from 'leaflet';
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
-  viewMode: 'map' | 'cards' = 'cards';
+  viewMode: 'map' | 'cards' = 'map';
   map: L.Map | undefined;
 
   intercambios: any[] = [];
   filteredIntercambios: any[] = [];
+  searchTags: string[] = [];
+  tagInput: string = '';
   isGerente: boolean = false;
   userName: string = '';
 
   // Filters
-  searchQuery: string = '';
   priceRange: string = '';
 
   private apiUrl = 'http://localhost:3000';
@@ -39,6 +40,9 @@ export class Home implements OnInit {
     this.isGerente = this.authService.isGerente();
     this.userName = user?.nome || 'Usuário';
     this.loadIntercambios();
+    if (this.viewMode === 'map') {
+      setTimeout(() => this.initMap(), 100);
+    }
   }
 
   loadIntercambios() {
@@ -72,39 +76,52 @@ export class Home implements OnInit {
   }
 
   applyFilters() {
-    let result = [...this.intercambios];
-
-    if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase().trim();
-      result = result.filter(item =>
-        item.pais?.toLowerCase().includes(query) ||
-        item.cidade?.toLowerCase().includes(query) ||
-        item.titulo?.toLowerCase().includes(query) ||
-        item.instituicao?.toLowerCase().includes(query)
-      );
-    }
-
-    if (this.priceRange) {
-      switch (this.priceRange) {
-        case '1':
-          result = result.filter(item => item.preco <= 10000);
-          break;
-        case '2':
-          result = result.filter(item => item.preco > 10000 && item.preco <= 20000);
-          break;
-        case '3':
-          result = result.filter(item => item.preco > 20000);
-          break;
+    this.filteredIntercambios = this.intercambios.filter(item => {
+      const searchStr = `${item.titulo} ${item.pais} ${item.cidade} ${item.instituicao}`.toLowerCase();
+      
+      let matchesTags = true;
+      if (this.searchTags.length > 0) {
+        matchesTags = this.searchTags.some(tag => searchStr.includes(tag));
       }
-    }
 
-    this.filteredIntercambios = result;
+      let matchesPrice = true;
+      if (this.priceRange === '1') matchesPrice = item.preco <= 10000;
+      if (this.priceRange === '2') matchesPrice = item.preco > 10000 && item.preco <= 20000;
+      if (this.priceRange === '3') matchesPrice = item.preco > 20000;
+
+      return matchesTags && matchesPrice;
+    });
+
+    if (this.viewMode === 'map') {
+      this.initMap();
+    }
+  }
+
+  addSearchTag(event: any) {
+    const val = this.tagInput.trim();
+    if (val && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      if (!this.searchTags.includes(val.toLowerCase())) {
+        this.searchTags.push(val.toLowerCase());
+      }
+      this.tagInput = '';
+      this.applyFilters();
+    }
+  }
+
+  removeSearchTag(tag: string) {
+    this.searchTags = this.searchTags.filter(t => t !== tag);
+    this.applyFilters();
   }
 
   clearFilters() {
-    this.searchQuery = '';
+    this.searchTags = [];
+    this.tagInput = '';
     this.priceRange = '';
     this.filteredIntercambios = [...this.intercambios];
+    if (this.viewMode === 'map') {
+      this.initMap();
+    }
   }
 
   getStars(rating: number): number[] {
@@ -129,7 +146,7 @@ export class Home implements OnInit {
 
     this.map = L.map('map').setView([48.8566, 2.3522], 4);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }).addTo(this.map);
 

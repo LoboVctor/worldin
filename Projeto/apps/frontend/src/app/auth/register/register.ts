@@ -17,6 +17,8 @@ export class Register {
   successMessage: string = '';
   isLoading: boolean = false;
   showPasswordCriteria: boolean = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,7 +27,7 @@ export class Register {
   ) {
     this.registerForm = this.fb.group({
       nome: ['', [Validators.required, Validators.maxLength(100)]],
-      cpf: ['', [Validators.required, Validators.pattern('^[0-9]{11}$')]],
+      cpf: ['', [Validators.required, Validators.minLength(14), Validators.maxLength(14)]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
       role: ['', [Validators.required]],
       senha: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordStrengthValidator]],
@@ -78,13 +80,32 @@ export class Register {
     return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(this.senhaControl?.value || '');
   }
 
+  formatCPF(event: any) {
+    let value = event.target.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+    if (value.length > 9) {
+      value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    } else if (value.length > 6) {
+      value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+    } else if (value.length > 3) {
+      value = value.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+    }
+    this.registerForm.get('cpf')?.setValue(value, { emitEvent: false });
+  }
+
+  togglePassword(field: 'senha' | 'confirmarSenha') {
+    if (field === 'senha') this.showPassword = !this.showPassword;
+    if (field === 'confirmarSenha') this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   onSubmit() {
     if (this.registerForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
       this.successMessage = '';
 
-      const { nome, cpf, email, senha, role } = this.registerForm.value;
+      let { nome, cpf, email, senha, role } = this.registerForm.value;
+      cpf = cpf.replace(/\D/g, ''); // Remove pontuação antes de enviar
 
       this.authService.register({ nome, cpf, email, senha, role }).subscribe({
         next: () => {

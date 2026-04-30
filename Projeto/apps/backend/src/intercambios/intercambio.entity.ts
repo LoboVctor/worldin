@@ -43,4 +43,7 @@ export class Intercambio {
 
   @OneToMany(() => Avaliacao, avaliacao => avaliacao.intercambio)
   avaliacoes: Avaliacao[];
+
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  imagem: string;
 }

@@ -24,4 +24,7 @@ export class Usuario {
 
   @OneToMany(() => Avaliacao, avaliacao => avaliacao.usuario)
   avaliacoes: Avaliacao[];
+
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  foto_perfil: string;
 }

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } 
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-intercambio',
@@ -33,6 +34,13 @@ export class Intercambio implements OnInit {
   hoverRating: number = 0;
   selectedRating: number = 5;
 
+  // Map Modal
+  showMapModal = false;
+  pickerMap: L.Map | undefined;
+  pickerMarker: L.Marker | undefined;
+  tempLat: number | null = null;
+  tempLng: number | null = null;
+
   private apiUrl = 'http://localhost:3000';
 
   constructor(
@@ -47,12 +55,13 @@ export class Intercambio implements OnInit {
       titulo: ['', Validators.required],
       pais: ['', Validators.required],
       cidade: ['', Validators.required],
-      instituicao: [''],
+      instituicao: ['', Validators.required],
       preco: [null, [Validators.required, Validators.min(0)]],
-      descricao: [''],
+      descricao: ['', Validators.required],
       link_compra: [''],
-      latitude: [null],
-      longitude: [null]
+      imagem: ['', Validators.required],
+      latitude: [null, Validators.required],
+      longitude: [null, Validators.required]
     });
 
     this.avaliacaoForm = this.fb.group({
@@ -155,7 +164,7 @@ export class Intercambio implements OnInit {
           next: () => {
             this.isLoading = false;
             this.showToastMessage('Intercâmbio criado com sucesso!');
-            setTimeout(() => this.router.navigate(['/home']), 1500);
+            setTimeout(() => this.router.navigate(['/home']), 3000);
           },
           error: () => {
             this.isLoading = false;
@@ -233,6 +242,7 @@ export class Intercambio implements OnInit {
       preco: this.intercambioDetail.preco,
       descricao: this.intercambioDetail.descricao,
       link_compra: this.intercambioDetail.link_compra,
+      imagem: this.intercambioDetail.imagem,
       latitude: this.intercambioDetail.latitude,
       longitude: this.intercambioDetail.longitude
     });
@@ -244,6 +254,50 @@ export class Intercambio implements OnInit {
       this.isEditing = false;
     } else {
       this.router.navigate(['/home']);
+    }
+  }
+
+  blockComma(event: KeyboardEvent) {
+    if (event.key === ',') event.preventDefault();
+  }
+
+  openMapModal() {
+    this.showMapModal = true;
+    setTimeout(() => {
+      this.pickerMap = L.map('picker-map').setView([0, 0], 2);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CARTO'
+      }).addTo(this.pickerMap);
+
+      this.pickerMap.on('click', (e: any) => {
+        const { lat, lng } = e.latlng;
+        this.tempLat = lat;
+        this.tempLng = lng;
+        if (this.pickerMarker) {
+          this.pickerMarker.setLatLng([lat, lng]);
+        } else {
+          this.pickerMarker = L.marker([lat, lng]).addTo(this.pickerMap!);
+        }
+      });
+    }, 200);
+  }
+
+  confirmMapLocation() {
+    if (this.tempLat !== null && this.tempLng !== null) {
+      this.intercambioForm.patchValue({
+        latitude: this.tempLat.toFixed(6),
+        longitude: this.tempLng.toFixed(6)
+      });
+    }
+    this.closeMapModal();
+  }
+
+  closeMapModal() {
+    this.showMapModal = false;
+    if (this.pickerMap) {
+      this.pickerMap.remove();
+      this.pickerMap = undefined;
+      this.pickerMarker = undefined;
     }
   }
 

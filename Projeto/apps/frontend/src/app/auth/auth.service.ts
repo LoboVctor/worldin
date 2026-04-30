@@ -8,6 +8,7 @@ export interface UserData {
   nome: string;
   email: string;
   role: string;
+  foto_perfil?: string;
 }
 
 export interface LoginResponse {
@@ -76,7 +77,7 @@ export class AuthService {
     return user?.role === 'GERENTE';
   }
 
-  updateProfile(cpf: string, data: { nome?: string; email?: string }): Observable<any> {
+  updateProfile(cpf: string, data: { nome?: string; email?: string; foto_perfil?: string }): Observable<any> {
     return this.http.patch(`${this.usersUrl}/${cpf}/profile`, data).pipe(
       tap((updatedUser: any) => {
         const currentUser = this.getCurrentUser();

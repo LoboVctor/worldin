@@ -28,6 +28,18 @@ export class Profile implements OnInit {
   showPasswordCriteria: boolean = false;
   userName: string = '';
   userRole: string = '';
+  selectedAvatar: string = '';
+
+  showSenhaAtual = false;
+  showNovaSenha = false;
+  showConfirmarSenha = false;
+
+  avatars = [
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Jude',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Lilly'
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -78,6 +90,7 @@ export class Profile implements OnInit {
       });
       this.userName = user.nome;
       this.userRole = user.role;
+      this.selectedAvatar = user.foto_perfil || '';
     }
   }
 
@@ -90,10 +103,15 @@ export class Profile implements OnInit {
 
       const { nome, email } = this.profileForm.value;
 
-      this.authService.updateProfile(user.cpf, { nome, email }).subscribe({
+      this.authService.updateProfile(user.cpf, { nome, email, foto_perfil: this.selectedAvatar }).subscribe({
         next: () => {
           this.successMessage = 'Dados atualizados com sucesso!';
           this.userName = nome;
+          
+          // Atualiza usuário localmente também para não perder as infos
+          const updatedUser = { ...user, nome, email, foto_perfil: this.selectedAvatar };
+          localStorage.setItem('worldin_user', JSON.stringify(updatedUser));
+          
           setTimeout(() => this.successMessage = '', 3000);
         },
         error: (err) => {
@@ -101,6 +119,10 @@ export class Profile implements OnInit {
         }
       });
     }
+  }
+
+  selectAvatar(url: string) {
+    this.selectedAvatar = url;
   }
 
   togglePasswordSection() {

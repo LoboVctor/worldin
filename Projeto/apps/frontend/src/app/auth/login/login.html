@@ -1,5 +1,13 @@
 <div class="login-container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="glass-card p-5" style="width: 100%; max-width: 450px;">
+  <div class="bg-slider">
+    <div *ngFor="let img of images; let i = index" 
+         class="bg-slide" 
+         [class.active]="i === currentImageIndex" 
+         [style.background-image]="'url(' + img + ')'">
+    </div>
+    <div class="bg-overlay"></div>
+  </div>
+  <div class="glass-card p-5" style="width: 100%; max-width: 450px; z-index: 2;">
     <div class="text-center mb-4">
       <h2 style="color: var(--primary); font-weight: 700;">Worldin</h2>
       <p class="text-secondary">Faça login para acessar o sistema</p>
@@ -23,14 +31,19 @@
 
       <div class="mb-4">
         <label for="senha" class="form-label text-light">Senha</label>
-        <input 
-          type="password" 
-          id="senha" 
-          class="form-control form-control-custom" 
-          formControlName="senha" 
-          placeholder="Sua senha"
-          maxlength="50"
-        >
+        <div class="input-group">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="senha" 
+            class="form-control form-control-custom border-end-0" 
+            formControlName="senha" 
+            placeholder="Digite sua senha"
+            maxlength="50"
+          >
+          <span class="input-group-text form-control-custom border-start-0 text-secondary" style="cursor: pointer; border-radius: 0 8px 8px 0; background: rgba(255,255,255,0.05);" (click)="togglePassword()">
+            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </span>
+        </div>
         <div *ngIf="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched" class="text-danger small mt-1">
           Campo obrigatório (máx 50 caracteres).
         </div>

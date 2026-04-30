@@ -33,7 +33,7 @@ export class UsersService {
     return this.usersRepository.save(newUser);
   }
 
-  async updateProfile(cpf: string, data: { nome?: string; email?: string }): Promise<Usuario> {
+  async updateProfile(cpf: string, data: { nome?: string; email?: string; foto_perfil?: string }): Promise<Usuario> {
     const user = await this.findByCpf(cpf);
     if (!user) {
       throw new NotFoundException('Usuário não encontrado.');
@@ -49,6 +49,10 @@ export class UsersService {
 
     if (data.nome) {
       user.nome = data.nome;
+    }
+
+    if (data.foto_perfil !== undefined) {
+      user.foto_perfil = data.foto_perfil;
     }
 
     return this.usersRepository.save(user);

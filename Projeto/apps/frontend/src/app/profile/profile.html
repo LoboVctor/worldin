@@ -1,23 +1,44 @@
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--bg-dark); border-bottom: 1px solid rgba(255,255,255,0.1);">
-  <div class="container">
-    <a class="navbar-brand" routerLink="/home" style="color: var(--primary); font-weight: 700;">Worldin</a>
-    <div class="d-flex align-items-center">
-      <a routerLink="/home" class="btn btn-outline-light me-3 btn-sm">Voltar</a>
-      <button class="btn btn-danger btn-sm" (click)="logout()">Sair</button>
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #111111; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; z-index: 1040;">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/home" style="color: var(--primary); font-weight: 700; font-size: 1.4rem;">
+      <img src="assets/logo.png" alt="Worldin Logo" width="32" height="32" style="border-radius: 6px;">
+      Worldin
+    </a>
+    <div class="d-flex align-items-center gap-2">
+      <a *ngIf="userRole === 'GERENTE'" routerLink="/intercambio-novo" class="btn btn-outline-custom rounded-pill btn-sm px-3">
+        <i class="bi bi-plus-circle me-1"></i> Novo Intercâmbio
+      </a>
+      <a routerLink="/profile" class="btn btn-transparent text-light rounded-pill btn-sm px-3">
+        <i class="bi bi-person-circle me-1"></i> Meu Perfil
+      </a>
+      <button class="btn btn-danger rounded-pill btn-sm px-3" (click)="logout()">Sair</button>
     </div>
   </div>
 </nav>
 
-<div class="container mt-5 mb-5">
+<div class="container mb-5" style="margin-top: 85px;">
   <div class="glass-card p-5 mx-auto" style="max-width: 600px;">
     <div class="text-center mb-4">
-      <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center mx-auto mb-3" style="width: 100px; height: 100px;">
-        <i class="bi bi-person-fill text-light" style="font-size: 4rem;"></i>
+      <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center mx-auto mb-3 overflow-hidden" style="width: 100px; height: 100px; border: 2px solid var(--primary);">
+        <img *ngIf="selectedAvatar" [src]="selectedAvatar" alt="Avatar" class="w-100 h-100" style="object-fit: cover;">
+        <i *ngIf="!selectedAvatar" class="bi bi-person-fill text-light" style="font-size: 4rem;"></i>
       </div>
       <h3 style="color: var(--primary); font-weight: 600;">{{ userName }}</h3>
-      <span class="badge" style="background-color: var(--primary); color: black; font-size: 0.8rem;">
+      <span class="badge rounded-pill mb-3" style="background-color: var(--primary); color: black; font-size: 0.8rem;">
         {{ userRole === 'GERENTE' ? 'Gerente' : 'Estudante' }}
       </span>
+
+      <!-- Select Avatar -->
+      <div class="mb-2 mt-2">
+        <p class="text-light small mb-2">Escolha uma foto de perfil:</p>
+        <div class="d-flex justify-content-center gap-3">
+          <img *ngFor="let avatar of avatars" [src]="avatar" class="rounded-circle avatar-option" 
+               [ngClass]="{'border-primary shadow-lg': selectedAvatar === avatar, 'border-secondary opacity-50': selectedAvatar !== avatar}" 
+               style="width: 50px; height: 50px; cursor: pointer; border: 2px solid; transition: all 0.2s;" 
+               (click)="selectAvatar(avatar)">
+        </div>
+      </div>
     </div>
 
     <!-- Profile Form -->
@@ -61,19 +82,29 @@
       <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
         <div class="mb-3">
           <label class="form-label text-light">Senha Atual</label>
-          <input type="password" class="form-control form-control-custom" formControlName="senhaAtual" placeholder="Sua senha atual">
+          <div class="input-group">
+            <input [type]="showSenhaAtual ? 'text' : 'password'" class="form-control form-control-custom border-end-0" formControlName="senhaAtual" placeholder="Sua senha atual">
+            <span class="input-group-text form-control-custom border-start-0 text-secondary" style="cursor: pointer; border-radius: 0 8px 8px 0; background: rgba(255,255,255,0.05);" (click)="showSenhaAtual = !showSenhaAtual">
+              <i class="bi" [ngClass]="showSenhaAtual ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </span>
+          </div>
         </div>
         <div class="mb-3 position-relative">
           <label class="form-label text-light">Nova Senha</label>
-          <input
-            type="password"
-            class="form-control form-control-custom"
-            formControlName="novaSenha"
-            placeholder="Nova senha"
-            maxlength="50"
-            (focus)="showPasswordCriteria = true"
-            (blur)="showPasswordCriteria = false"
-          >
+          <div class="input-group">
+            <input
+              [type]="showNovaSenha ? 'text' : 'password'"
+              class="form-control form-control-custom border-end-0"
+              formControlName="novaSenha"
+              placeholder="Nova senha"
+              maxlength="50"
+              (focus)="showPasswordCriteria = true"
+              (blur)="showPasswordCriteria = false"
+            >
+            <span class="input-group-text form-control-custom border-start-0 text-secondary" style="cursor: pointer; border-radius: 0 8px 8px 0; background: rgba(255,255,255,0.05);" (click)="showNovaSenha = !showNovaSenha">
+              <i class="bi" [ngClass]="showNovaSenha ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </span>
+          </div>
           <!-- Password Criteria Popover -->
           <div *ngIf="showPasswordCriteria" class="password-criteria-popover glass-card p-3 mt-2">
             <p class="mb-2 small" style="color: var(--primary); font-weight: 600;">Critérios da senha:</p>
@@ -103,7 +134,12 @@
         </div>
         <div class="mb-3">
           <label class="form-label text-light">Confirmar Nova Senha</label>
-          <input type="password" class="form-control form-control-custom" formControlName="confirmarNovaSenha" placeholder="Confirme a nova senha">
+          <div class="input-group">
+            <input [type]="showConfirmarSenha ? 'text' : 'password'" class="form-control form-control-custom border-end-0" formControlName="confirmarNovaSenha" placeholder="Confirme a nova senha">
+            <span class="input-group-text form-control-custom border-start-0 text-secondary" style="cursor: pointer; border-radius: 0 8px 8px 0; background: rgba(255,255,255,0.05);" (click)="showConfirmarSenha = !showConfirmarSenha">
+              <i class="bi" [ngClass]="showConfirmarSenha ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </span>
+          </div>
           <div *ngIf="passwordForm.hasError('mismatch') && passwordForm.get('confirmarNovaSenha')?.touched" class="text-danger small mt-1">As senhas não coincidem.</div>
         </div>
 
