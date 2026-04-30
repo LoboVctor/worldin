@@ -11,14 +11,15 @@
   "private": true,
   "packageManager": "npm@11.7.0",
   "dependencies": {
-    "@worldin/shared": "*",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@worldin/shared": "*",
     "bootstrap": "^5.3.8",
+    "globe.gl": "^2.45.3",
     "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

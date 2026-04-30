@@ -1,12 +1,15 @@
 
 <!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #111111; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; z-index: 1040;">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--bg-navbar); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; z-index: 1040;">
   <div class="container-fluid px-4">
     <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/home" style="color: var(--primary); font-weight: 700; font-size: 1.4rem;">
       <img src="assets/logo.png" alt="Worldin Logo" width="32" height="32" style="border-radius: 6px;">
       Worldin
     </a>
     <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-transparent text-light rounded-pill btn-sm px-3" (click)="toggleTheme()" title="Alternar tema">
+        <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-fill'" style="font-size: 1.1rem;"></i>
+      </button>
       <a *ngIf="isGerente" routerLink="/intercambio-novo" class="btn btn-outline-custom rounded-pill btn-sm px-3">
         <i class="bi bi-plus-circle me-1"></i> Novo Intercâmbio
       </a>
@@ -63,9 +66,8 @@
           <div *ngIf="intercambioForm.get('preco')?.invalid && intercambioForm.get('preco')?.touched" class="text-danger small mt-1">Preço obrigatório.</div>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label text-light">Imagem (URL)</label>
+          <label class="form-label text-light">Imagem (URL) <span class="text-secondary">— opcional</span></label>
           <input type="url" class="form-control form-control-custom" formControlName="imagem" placeholder="https://exemplo.com/imagem.jpg">
-          <div *ngIf="intercambioForm.get('imagem')?.invalid && intercambioForm.get('imagem')?.touched" class="text-danger small mt-1">Campo obrigatório.</div>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label text-light">Link de Compra</label>
@@ -104,11 +106,16 @@
 
   <!-- MODO VISUALIZAÇÃO DE DETALHES -->
   <div *ngIf="!isNew && !isLoading && intercambioDetail" class="row g-4">
+    <div class="col-12 mb-2">
+      <button class="btn btn-outline-light rounded-pill px-4" routerLink="/home">
+        <i class="bi bi-arrow-left me-2"></i>Voltar
+      </button>
+    </div>
     <div class="col-lg-8">
       <div class="glass-card overflow-hidden mb-4">
         <div style="height: 400px; background: linear-gradient(135deg, #3c3c3c, #1a1a1a); position: relative;" class="d-flex align-items-center justify-content-center">
           <img *ngIf="intercambioDetail.imagem" [src]="intercambioDetail.imagem" class="w-100 h-100" style="object-fit: cover;" alt="Intercâmbio">
-          <i *ngIf="!intercambioDetail.imagem" class="bi bi-globe-americas" style="font-size: 5rem; color: var(--primary); opacity: 0.4;"></i>
+          <img *ngIf="!intercambioDetail.imagem" [src]="'https://loremflickr.com/800/600/' + intercambioDetail.cidade + ',' + intercambioDetail.pais + ',city'" class="w-100 h-100" style="object-fit: cover; filter: brightness(0.8);" alt="Imagem Automática">
         </div>
         <div class="p-4">
           <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">

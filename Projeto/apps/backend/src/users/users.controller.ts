@@ -1,9 +1,15 @@
-import { Controller, Patch, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @Get('check-cpf/:cpf')
+  async checkCpf(@Param('cpf') cpf: string) {
+    const user = await this.usersService.findByCpf(cpf);
+    return { available: !user };
+  }
 
   @Patch(':cpf/profile')
   async updateProfile(@Param('cpf') cpf: string, @Body() body: { nome?: string; email?: string; foto_perfil?: string }) {

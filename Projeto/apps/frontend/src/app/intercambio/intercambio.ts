@@ -1,9 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
+import { ThemeService } from '../theme.service';
+import { Subscription } from 'rxjs';
 import * as L from 'leaflet';
 
 @Component({
@@ -13,7 +15,7 @@ import * as L from 'leaflet';
   templateUrl: './intercambio.html',
   styleUrl: './intercambio.css',
 })
-export class Intercambio implements OnInit {
+export class Intercambio implements OnInit, OnDestroy {
   isNew: boolean = false;
   isEditing: boolean = false;
   intercambioForm: FormGroup;
@@ -43,13 +45,18 @@ export class Intercambio implements OnInit {
 
   private apiUrl = 'http://localhost:3000';
 
+  // Theme
+  isDarkMode: boolean = true;
+  private themeSub: Subscription | undefined;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
     private http: HttpClient,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private themeService: ThemeService
   ) {
     this.intercambioForm = this.fb.group({
       titulo: ['', Validators.required],
@@ -59,7 +66,7 @@ export class Intercambio implements OnInit {
       preco: [null, [Validators.required, Validators.min(0)]],
       descricao: ['', Validators.required],
       link_compra: [''],
-      imagem: ['', Validators.required],
+      imagem: [''],
       latitude: [null, Validators.required],
       longitude: [null, Validators.required]
     });
@@ -83,6 +90,18 @@ export class Intercambio implements OnInit {
         this.isNew = true;
       }
     });
+
+    this.themeSub = this.themeService.isDarkMode$.subscribe(val => {
+      this.isDarkMode = val;
+    });
+  }
+
+  ngOnDestroy() {
+    this.themeSub?.unsubscribe();
+  }
+
+  toggleTheme() {
+    this.themeService.toggle();
   }
 
   loadDetails() {

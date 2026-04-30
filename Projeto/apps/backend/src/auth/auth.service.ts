@@ -53,6 +53,7 @@ export class AuthService {
         nome: user.nome,
         email: user.email,
         role: user.role,
+        foto_perfil: user.foto_perfil,
       }
     };
   }

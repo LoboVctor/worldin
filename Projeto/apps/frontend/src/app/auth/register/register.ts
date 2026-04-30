@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -19,16 +20,19 @@ export class Register {
   showPasswordCriteria: boolean = false;
   showPassword = false;
   showConfirmPassword = false;
+  cpfInUse: boolean = false;
+  cpfChecking: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {
     this.registerForm = this.fb.group({
       nome: ['', [Validators.required, Validators.maxLength(100)]],
       cpf: ['', [Validators.required, Validators.minLength(14), Validators.maxLength(14)]],
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(50), Register.emailDomainValidator]],
       role: ['', [Validators.required]],
       senha: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordStrengthValidator]],
       confirmarSenha: ['', [Validators.required]]
@@ -49,6 +53,16 @@ export class Register {
     if (!hasSpecialChar) errors.noSpecialChar = true;
 
     return Object.keys(errors).length ? errors : null;
+  }
+
+  static emailDomainValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+    const parts = value.split('@');
+    if (parts.length === 2 && parts[1] && !parts[1].includes('.')) {
+      return { invalidDomain: true };
+    }
+    return null;
   }
 
   passwordMatchValidator(g: FormGroup) {
@@ -96,6 +110,30 @@ export class Register {
   togglePassword(field: 'senha' | 'confirmarSenha') {
     if (field === 'senha') this.showPassword = !this.showPassword;
     if (field === 'confirmarSenha') this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  checkCpfAvailability() {
+    const cpfValue = this.registerForm.get('cpf')?.value;
+    if (!cpfValue || cpfValue.length < 14) {
+      this.cpfInUse = false;
+      return;
+    }
+    const cpfClean = cpfValue.replace(/\D/g, '');
+    if (cpfClean.length !== 11) {
+      this.cpfInUse = false;
+      return;
+    }
+    this.cpfChecking = true;
+    this.http.get<{available: boolean}>(`http://localhost:3000/users/check-cpf/${cpfClean}`).subscribe({
+      next: (res) => {
+        this.cpfInUse = !res.available;
+        this.cpfChecking = false;
+      },
+      error: () => {
+        this.cpfInUse = false;
+        this.cpfChecking = false;
+      }
+    });
   }
 
   onSubmit() {

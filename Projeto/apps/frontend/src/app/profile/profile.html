@@ -1,11 +1,14 @@
 <!-- Top Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: #111111; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; z-index: 1040;">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--bg-navbar); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; z-index: 1040;">
   <div class="container-fluid px-4">
     <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/home" style="color: var(--primary); font-weight: 700; font-size: 1.4rem;">
       <img src="assets/logo.png" alt="Worldin Logo" width="32" height="32" style="border-radius: 6px;">
       Worldin
     </a>
     <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-transparent text-light rounded-pill btn-sm px-3" (click)="toggleTheme()" title="Alternar tema">
+        <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-fill'" style="font-size: 1.1rem;"></i>
+      </button>
       <a *ngIf="userRole === 'GERENTE'" routerLink="/intercambio-novo" class="btn btn-outline-custom rounded-pill btn-sm px-3">
         <i class="bi bi-plus-circle me-1"></i> Novo Intercâmbio
       </a>
@@ -18,6 +21,11 @@
 </nav>
 
 <div class="container mb-5" style="margin-top: 85px;">
+  <div class="mb-3">
+    <button class="btn btn-outline-light rounded-pill px-4" routerLink="/home">
+      <i class="bi bi-arrow-left me-2"></i>Voltar
+    </button>
+  </div>
   <div class="glass-card p-5 mx-auto" style="max-width: 600px;">
     <div class="text-center mb-4">
       <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center mx-auto mb-3 overflow-hidden" style="width: 100px; height: 100px; border: 2px solid var(--primary);">

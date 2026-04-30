@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { ThemeService } from '../theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -11,7 +13,7 @@ import { AuthService } from '../auth/auth.service';
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
-export class Profile implements OnInit {
+export class Profile implements OnInit, OnDestroy {
   profileForm: FormGroup;
   passwordForm: FormGroup;
   successMessage: string = '';
@@ -41,9 +43,13 @@ export class Profile implements OnInit {
     'https://api.dicebear.com/7.x/avataaars/svg?seed=Lilly'
   ];
 
+  isDarkMode: boolean = true;
+  private themeSub: Subscription | undefined;
+
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private themeService: ThemeService
   ) {
     this.profileForm = this.fb.group({
       nome: ['', [Validators.required, Validators.maxLength(100)]],
@@ -80,18 +86,38 @@ export class Profile implements OnInit {
   get hasLowerCase(): boolean { return /[a-z]/.test(this.novaSenhaControl?.value || ''); }
   get hasSpecialChar(): boolean { return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(this.novaSenhaControl?.value || ''); }
 
+  formatCpfDisplay(cpf: string): string {
+    if (!cpf) return '';
+    const digits = cpf.replace(/\D/g, '');
+    if (digits.length === 11) {
+      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    return cpf;
+  }
+
   ngOnInit() {
     const user = this.authService.getCurrentUser();
     if (user) {
       this.profileForm.patchValue({
         nome: user.nome,
         email: user.email,
-        cpf: user.cpf
+        cpf: this.formatCpfDisplay(user.cpf)
       });
       this.userName = user.nome;
       this.userRole = user.role;
       this.selectedAvatar = user.foto_perfil || '';
     }
+    this.themeSub = this.themeService.isDarkMode$.subscribe(val => {
+      this.isDarkMode = val;
+    });
+  }
+
+  ngOnDestroy() {
+    this.themeSub?.unsubscribe();
+  }
+
+  toggleTheme() {
+    this.themeService.toggle();
   }
 
   onSubmit() {

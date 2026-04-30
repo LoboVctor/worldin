@@ -24,8 +24,11 @@
           placeholder="exemplo@email.com"
           maxlength="50"
         >
-        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-danger small mt-1">
-          E-mail inválido ou campo obrigatório (máx 50 caracteres).
+        <div *ngIf="loginForm.get('email')?.touched" class="text-danger small mt-1">
+          <span *ngIf="loginForm.get('email')?.hasError('required')">E-mail é obrigatório.</span>
+          <span *ngIf="loginForm.get('email')?.hasError('email') && !loginForm.get('email')?.hasError('required')">Formato de e-mail inválido.</span>
+          <span *ngIf="loginForm.get('email')?.hasError('invalidDomain') && !loginForm.get('email')?.hasError('email') && !loginForm.get('email')?.hasError('required')">Domínio inválido (ex: nome@dominio.com).</span>
+          <span *ngIf="loginForm.get('email')?.hasError('maxlength')">Máximo de 50 caracteres.</span>
         </div>
       </div>
 

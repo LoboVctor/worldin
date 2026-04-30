@@ -1,0 +1,56 @@
+<div class="onboarding-container d-flex flex-column justify-content-center align-items-center min-vh-100">
+  <!-- Background particles -->
+  <div class="particles">
+    <div class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8,9,10,11,12]" [style.--delay]="p * 0.5 + 's'"></div>
+  </div>
+
+  <!-- Logo -->
+  <div class="text-center mb-4 fade-in">
+    <h1 style="color: var(--primary); font-weight: 800; font-size: 2.5rem; letter-spacing: -1px;">Worldin</h1>
+    <p class="text-secondary">Sua plataforma de intercâmbios</p>
+  </div>
+
+  <!-- Step Card -->
+  <div class="onboarding-card glass-card p-5 text-center" [class.slide-in]="true">
+    <div class="step-image-wrapper mb-4 overflow-hidden rounded-3 border border-secondary" style="height: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <img [src]="steps[currentStep].image" alt="Onboarding Image" class="w-100 h-100" style="object-fit: cover;">
+    </div>
+
+    <div class="step-icon-wrapper mb-4 mx-auto" style="margin-top: -60px; z-index: 2; position: relative; background: var(--bg-card);">
+      <i class="bi" [ngClass]="steps[currentStep].icon" 
+         [style.color]="steps[currentStep].color"
+         style="font-size: 3rem;"></i>
+    </div>
+
+    <h3 class="text-light mb-3" style="font-weight: 700;">{{ steps[currentStep].title }}</h3>
+    <p class="text-secondary mb-4 px-3" style="font-size: 1.05rem; line-height: 1.7;">
+      {{ steps[currentStep].description }}
+    </p>
+
+    <!-- Step Indicators -->
+    <div class="d-flex justify-content-center gap-2 mb-4">
+      <div *ngFor="let step of steps; let i = index" 
+           class="step-dot" 
+           [class.active]="i === currentStep"
+           [style.background-color]="i === currentStep ? steps[currentStep].color : 'rgba(255,255,255,0.15)'"
+           (click)="goToStep(i)">
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="d-flex justify-content-between align-items-center">
+      <button *ngIf="currentStep > 0" class="btn btn-outline-light rounded-pill px-4" (click)="prevStep()">
+        <i class="bi bi-arrow-left me-1"></i> Anterior
+      </button>
+      <button *ngIf="currentStep === 0" class="btn btn-link text-secondary text-decoration-none" (click)="skip()">
+        Pular
+      </button>
+
+      <button class="btn btn-primary-custom rounded-pill px-4 ms-auto" (click)="nextStep()">
+        {{ currentStep === steps.length - 1 ? 'Começar!' : 'Próximo' }}
+        <i *ngIf="currentStep < steps.length - 1" class="bi bi-arrow-right ms-1"></i>
+        <i *ngIf="currentStep === steps.length - 1" class="bi bi-rocket-takeoff ms-1"></i>
+      </button>
+    </div>
+  </div>
+</div>

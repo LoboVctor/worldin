@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth.service';
@@ -11,7 +11,8 @@ import { AuthService } from '../auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login implements OnInit {
+export class Login implements OnInit, OnDestroy {
+  private slideInterval: any;
   loginForm: FormGroup;
   errorMessage: string = '';
   isLoading: boolean = false;
@@ -30,15 +31,31 @@ export class Login implements OnInit {
     private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(50), Login.emailDomainValidator]],
       senha: ['', [Validators.required, Validators.maxLength(50)]]
     });
   }
 
+  static emailDomainValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+    const parts = value.split('@');
+    if (parts.length === 2 && parts[1] && !parts[1].includes('.')) {
+      return { invalidDomain: true };
+    }
+    return null;
+  }
+
   ngOnInit() {
-    setInterval(() => {
+    this.slideInterval = setInterval(() => {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
     }, 5000);
+  }
+
+  ngOnDestroy() {
+    if (this.slideInterval) {
+      clearInterval(this.slideInterval);
+    }
   }
 
   togglePassword() {
@@ -54,7 +71,12 @@ export class Login implements OnInit {
       this.authService.login(email, senha).subscribe({
         next: () => {
           this.isLoading = false;
-          this.router.navigate(['/home']);
+          const onboardingDone = localStorage.getItem('worldin_onboarding_done');
+          if (onboardingDone) {
+            this.router.navigate(['/home']);
+          } else {
+            this.router.navigate(['/onboarding']);
+          }
         },
         error: (err) => {
           this.isLoading = false;
