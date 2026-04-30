@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -28,7 +28,8 @@ export class Login implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(50), Login.emailDomainValidator]],
@@ -69,9 +70,13 @@ export class Login implements OnInit, OnDestroy {
       const { email, senha } = this.loginForm.value;
 
       this.authService.login(email, senha).subscribe({
-        next: () => {
+        next: (response: any) => {
           this.isLoading = false;
-          const onboardingDone = localStorage.getItem('worldin_onboarding_done');
+          // Se o backend enviar os dados do usuário na resposta (response.user) ou caso fallback pegue do localStorage
+          const userCpf = response?.user?.cpf || JSON.parse(localStorage.getItem('worldin_user') || '{}').cpf;
+          const onboardingKey = `worldin_onboarding_done_${userCpf}`;
+          const onboardingDone = localStorage.getItem(onboardingKey);
+          
           if (onboardingDone) {
             this.router.navigate(['/home']);
           } else {
@@ -81,6 +86,7 @@ export class Login implements OnInit, OnDestroy {
         error: (err) => {
           this.isLoading = false;
           this.errorMessage = err.error?.message || 'E-mail ou senha inválidos.';
+          this.cdr.detectChanges(); // Força a atualização da view
         }
       });
     } else {

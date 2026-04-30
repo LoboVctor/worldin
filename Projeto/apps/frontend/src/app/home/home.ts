@@ -158,7 +158,7 @@ export class Home implements OnInit, OnDestroy {
         lat: Number(item.latitude),
         lng: Number(item.longitude),
         size: 1.5,
-        color: '#cd9672',
+        color: '#a855f7',
         id: item.id_intercambio,
         titulo: item.titulo,
         cidade: item.cidade,
@@ -270,9 +270,9 @@ export class Home implements OnInit, OnDestroy {
           .bindPopup(`
             <div style="text-align: center;">
               <h6 style="margin-bottom: 5px; font-weight: bold;">${item.titulo}</h6>
-              <p style="margin-bottom: 5px; color: #cd9672;">${stars}</p>
+              <p style="margin-bottom: 5px; color: #a855f7;">${stars}</p>
               <p style="margin-bottom: 10px;">R$ ${item.preco}</p>
-              <a href="/intercambio/${item.id_intercambio}" class="btn btn-sm btn-primary" style="background-color: #cd9672; border: none; color: black; font-weight: bold;">Ver Detalhes</a>
+              <a href="/intercambio/${item.id_intercambio}" class="btn btn-sm btn-primary" style="background-color: #a855f7; border: none; color: white; font-weight: bold;">Ver Detalhes</a>
             </div>
           `);
       }
@@ -306,11 +306,11 @@ export class Home implements OnInit, OnDestroy {
       .pointRadius('size')
       .pointColor('color')
       .ringsData(pointsData)
-      .ringColor(() => '#cd9672')
+      .ringColor(() => '#a855f7')
       .ringMaxRadius('size')
       .ringPropagationSpeed(2)
       .ringRepeatPeriod(800)
-      .atmosphereColor('#cd9672')
+      .atmosphereColor('#a855f7')
       .atmosphereAltitude(0.2)
       .onPointClick((point: any) => {
         this.ngZone.run(() => {

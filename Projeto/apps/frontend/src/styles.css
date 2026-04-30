@@ -3,37 +3,37 @@
 @import "leaflet/dist/leaflet.css";
 
 :root, [data-theme="dark"] {
-  --primary: #cd9672;
-  --bg-dark: #040404;
-  --bg-card: #3c3c3c;
-  --text-primary: #ffffff;
-  --text-secondary: #a8b2b8;
-  --gray-medium: #5f5a59;
-  --gray-light: #7c7c84;
-  --bg-body: #040404;
-  --bg-navbar: #111111;
+  --primary: #a855f7;
+  --bg-dark: #09090b;
+  --bg-card: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --gray-medium: #475569;
+  --gray-light: #64748b;
+  --bg-body: #0f172a;
+  --bg-navbar: #09090b;
   --bg-input: rgba(255, 255, 255, 0.05);
   --border-input: rgba(255, 255, 255, 0.1);
-  --glass-bg: rgba(60, 60, 60, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --shadow-card: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(30, 41, 59, 0.6);
+  --glass-border: rgba(168, 85, 247, 0.2);
+  --shadow-card: rgba(168, 85, 247, 0.15);
 }
 
 [data-theme="light"] {
-  --primary: #b87a55;
-  --bg-dark: #f5f0eb;
+  --primary: #8b5cf6;
+  --bg-dark: #f1f5f9;
   --bg-card: #ffffff;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4b5563;
-  --gray-medium: #d1d5db;
-  --gray-light: #9ca3af;
-  --bg-body: #f5f0eb;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --gray-medium: #cbd5e1;
+  --gray-light: #94a3b8;
+  --bg-body: #f8fafc;
   --bg-navbar: #ffffff;
-  --bg-input: rgba(0, 0, 0, 0.04);
-  --border-input: rgba(0, 0, 0, 0.12);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --shadow-card: rgba(0, 0, 0, 0.06);
+  --bg-input: rgba(0, 0, 0, 0.03);
+  --border-input: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(139, 92, 246, 0.2);
+  --shadow-card: rgba(139, 92, 246, 0.1);
 }
 
 body {
@@ -61,23 +61,25 @@ body {
 
 .interactive-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(205, 150, 114, 0.2);
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
 }
 
 .btn-primary-custom {
   background-color: var(--primary);
   border: none;
-  color: #040404;
+  color: #ffffff;
   font-weight: 600;
   border-radius: 8px;
   padding: 10px 20px;
   transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
 }
 
 .btn-primary-custom:hover {
-  background-color: #b88563;
+  background-color: #9333ea;
   transform: scale(1.05);
-  color: #040404;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
 }
 
 .btn-outline-custom {
@@ -92,7 +94,8 @@ body {
 
 .btn-outline-custom:hover {
   background-color: var(--primary);
-  color: #040404;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
 }
 
 .form-control-custom {
@@ -107,7 +110,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border-color: var(--primary);
   color: var(--text-primary);
-  box-shadow: 0 0 0 0.25rem rgba(205, 150, 114, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(168, 85, 247, 0.25);
 }
 
 [data-theme="light"] .form-control-custom:focus {

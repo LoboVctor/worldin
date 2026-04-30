@@ -11,6 +11,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@canvas/image": "^2.0.0",
+    "node-vibrant": "^4.0.4",
     "pdf-parse": "^2.4.5"
   }
 }

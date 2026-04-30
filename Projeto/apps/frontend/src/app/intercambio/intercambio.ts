@@ -26,6 +26,7 @@ export class Intercambio implements OnInit, OnDestroy {
   avaliacoes: any[] = [];
   mediaNotas: number = 0;
   isGerente: boolean = false;
+  userCpf: string = '';
   isLoading: boolean = false;
 
   // Toast
@@ -80,6 +81,8 @@ export class Intercambio implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isGerente = this.authService.isGerente();
+    const currentUser = this.authService.getCurrentUser();
+    this.userCpf = currentUser ? currentUser.cpf : '';
 
     this.route.params.subscribe(params => {
       if (params['id']) {
@@ -322,5 +325,20 @@ export class Intercambio implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout();
+  }
+
+  deleteAvaliacao(id_avaliacao: number) {
+    if (confirm('Tem certeza que deseja excluir esta avaliação?')) {
+      this.http.delete(`${this.apiUrl}/avaliacoes/${id_avaliacao}`).subscribe({
+        next: () => {
+          this.showToastMessage('Avaliação excluída com sucesso.');
+          this.loadDetails();
+        },
+        error: (err) => {
+          this.showToastMessage('Erro ao excluir avaliação.');
+          console.error(err);
+        }
+      });
+    }
   }
 }

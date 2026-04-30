@@ -18,28 +18,28 @@ export class Onboarding {
       image: 'https://loremflickr.com/600/400/travel,world',
       title: 'Explore o Mundo',
       description: 'Pesquise intercâmbios por país, cidade ou instituição. Encontre a experiência internacional perfeita para você.',
-      color: '#cd9672'
+      color: '#a855f7'
     },
     {
       icon: 'bi-map',
       image: 'https://loremflickr.com/600/400/earth,globe',
       title: 'Mapa Interativo 3D',
       description: 'Visualize destinos em um globo 3D interativo. Clique nos marcadores para ver detalhes de cada intercâmbio.',
-      color: '#72b5cd'
+      color: '#3b82f6'
     },
     {
       icon: 'bi-star-fill',
       image: 'https://loremflickr.com/600/400/student,review',
       title: 'Avaliações Reais',
       description: 'Leia relatos e avaliações de alunos que já viveram a experiência. Notas de 1 a 5 estrelas para ajudar na sua escolha.',
-      color: '#ffc107'
+      color: '#10b981'
     },
     {
       icon: 'bi-rocket-takeoff',
       image: 'https://loremflickr.com/600/400/airplane,fly',
       title: 'Comece Agora!',
       description: 'Você está pronto para descobrir novos horizontes. Vamos começar sua jornada pelo mundo!',
-      color: '#cd9672'
+      color: '#a855f7'
     }
   ];
 
@@ -64,7 +64,10 @@ export class Onboarding {
   }
 
   finish() {
-    localStorage.setItem('worldin_onboarding_done', 'true');
+    const user = JSON.parse(localStorage.getItem('worldin_user') || '{}');
+    if (user && user.cpf) {
+      localStorage.setItem(`worldin_onboarding_done_${user.cpf}`, 'true');
+    }
     this.router.navigate(['/home']);
   }
 

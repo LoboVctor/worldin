@@ -31,4 +31,19 @@ export class AvaliacoesService {
       .getRawOne();
     return result?.avg ? parseFloat(result.avg) : 0;
   }
+
+  async findById(id: number): Promise<Avaliacao> {
+    const avaliacao = await this.avaliacoesRepository.findOne({ where: { id_avaliacao: id }, relations: ['usuario'] });
+    if (!avaliacao) {
+      throw new NotFoundException('Avaliação não encontrada.');
+    }
+    return avaliacao;
+  }
+
+  async remove(id: number): Promise<void> {
+    const result = await this.avaliacoesRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException('Avaliação não encontrada.');
+    }
+  }
 }

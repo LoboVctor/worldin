@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseIntPipe, Delete } from '@nestjs/common';
 import { AvaliacoesService } from './avaliacoes.service';
 
 @Controller('avaliacoes')
@@ -19,5 +19,11 @@ export class AvaliacoesController {
   async getAverageRating(@Param('id', ParseIntPipe) id: number) {
     const avg = await this.avaliacoesService.getAverageRating(id);
     return { media: avg };
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.avaliacoesService.remove(id);
+    return { message: 'Avaliação excluída com sucesso.' };
   }
 }

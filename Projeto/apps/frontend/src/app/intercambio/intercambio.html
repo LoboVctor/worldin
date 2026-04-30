@@ -211,15 +211,20 @@
               </div>
               <span style="font-weight: 600; color: white;">{{ avaliacao.usuario?.nome || 'Anônimo' }}</span>
             </div>
-            <div>
-              <i *ngFor="let s of getStars(avaliacao.nota)"
-                class="bi"
-                [ngClass]="{
-                  'bi-star-fill text-warning': s === 1,
-                  'bi-star text-secondary': s === 0
-                }"
-                style="font-size: 0.8rem;"
-              ></i>
+            <div class="d-flex align-items-center gap-3">
+              <div>
+                <i *ngFor="let s of getStars(avaliacao.nota)"
+                  class="bi"
+                  [ngClass]="{
+                    'bi-star-fill text-warning': s === 1,
+                    'bi-star text-secondary': s === 0
+                  }"
+                  style="font-size: 0.8rem;"
+                ></i>
+              </div>
+              <button *ngIf="isGerente || avaliacao.id_usuario === userCpf" class="btn btn-sm text-danger border-0 p-0" (click)="deleteAvaliacao(avaliacao.id_avaliacao)" title="Excluir Avaliação">
+                <i class="bi bi-trash-fill"></i>
+              </button>
             </div>
           </div>
           <h6 class="mt-2 text-light">{{ avaliacao.titulo }}</h6>
